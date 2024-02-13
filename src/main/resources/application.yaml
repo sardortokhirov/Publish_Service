@@ -1,0 +1,57 @@
+logging:
+  level:
+    org:
+    springframework: error
+
+
+
+application:
+  security:
+    jwt:
+      secret-key: bGbWqUxYztvCj8FzNO8GuJYY/YzkrU9wGx9+gaGwBo+Dmw0c70GFGZhtp2vw+1uq
+      expiration: 86400000
+      refresh-token:
+        expiration: 604800000
+
+
+
+server:
+  port: 8082
+
+
+aws:
+  region: us-east-1
+  s3:
+    buckets:
+      user: fs-amigoscode-customer-client-2
+
+
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/loomo
+    username: postgres
+    password: sardor
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  codec:
+    max-in-memory-size: 100MB
+  cassandra:
+    contact-points: loomo-cassandra-container
+    keyspace-name: loomo_keyspace
+    port: 9042
+    replication:
+      class: SimpleStrategy
+      replication-factor: 2
+    local-datacenter: datacenter1
+    schema-action: create_if_not_exists
