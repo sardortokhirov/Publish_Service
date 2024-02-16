@@ -2,6 +2,7 @@ package com.example.publish_service.service;
 
 import com.example.publish_service.model.cassandra.ClassPost;
 import com.example.publish_service.model.dto.ClassDto;
+import com.example.publish_service.model.entity.Language;
 import com.example.publish_service.model.entity.Teacher;
 import com.example.publish_service.model.payload.PageablePayload;
 import com.example.publish_service.model.payload.PublishedClassPagePayload;
@@ -106,5 +107,9 @@ public class ClassPostService {
                 classPostList.size(),
                 classPagePayloads
         );
+    }
+
+    public List<Language> getLanguages(){
+        return languageRepository.findAll();
     }
 }
