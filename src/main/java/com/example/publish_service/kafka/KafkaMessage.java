@@ -15,6 +15,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 public class KafkaMessage  implements Serializable {
-    private String id;
+    private String uuid;
     private String username;
+    private byte[] videoFile;
 }

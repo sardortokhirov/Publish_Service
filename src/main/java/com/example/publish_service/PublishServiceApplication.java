@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import java.util.UUID;
+
 
 @SpringBootApplication
 public class PublishServiceApplication {
@@ -18,11 +20,7 @@ public class PublishServiceApplication {
     @Bean
     CommandLineRunner commandLineRunner(KafkaTemplate<String, KafkaMessage> kafkaTemplate) {
         return args -> {
-//            while (true){
-//                System.out.println("helloo--------------------------------------------------");
-                kafkaTemplate.send("video-processing",new KafkaMessage("name","sardor_user"));
-//                    Thread.sleep(1000);
-//            }
+                kafkaTemplate.send("video-processing",new KafkaMessage(UUID.randomUUID().toString(),"sardor_user",new byte[0]));
         };
     }
 
