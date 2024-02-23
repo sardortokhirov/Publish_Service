@@ -15,26 +15,23 @@ import java.util.UUID;
  * By Sardor Tokhirov
  * Time-12:48 AM (GMT+5)
  */
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClassDto {
 
-    private UUID postId;
-    private Long teacherId;
     private String title;
     private String description;
-    private String courseTarget;
+    private List<String> courseTarget;
     private List<String> requirements;
-    private Integer languageId;
+    private String language;
     private Double price;
     private Integer maxStudents;
     private Date demoTime;
     private List<String> classDays;
     private Date classTime;
-    private MultipartFile photoFile;
-    private MultipartFile videoFile;
     private String category;
     private List<String> tags;
 }

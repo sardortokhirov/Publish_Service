@@ -10,9 +10,9 @@ import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -41,16 +41,16 @@ public class ClassPost {
     private String description;
 
     @Column("course_target")
-    private String courseTarget;
+    private List<String> courseTarget;
 
     private List<String> requirements;
-    @Column("language_id")
-    private Integer languageId;
 
-    private Double price;
+    private String language;
+
+    private BigDecimal price;
 
     @Column("max_students")
-    private int maxStudents;
+    private Integer maxStudents;
 
     @Column("demo_time")
     private Date demoTime;
@@ -70,6 +70,4 @@ public class ClassPost {
     private String category;
 
     private List<String> tags;
-
-
 }

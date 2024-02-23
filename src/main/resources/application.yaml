@@ -56,8 +56,3 @@ spring:
     local-datacenter: datacenter1
     schema-action: create_if_not_exists
 
-
-  kafka:
-    bootstrap-servers: localhost:9092
-    key-serializer: org.apache.kafka.common.serialization.StringSerializer
-    value-serializer: com.example.publish_service.kafkaKafkaMessageSerializer
