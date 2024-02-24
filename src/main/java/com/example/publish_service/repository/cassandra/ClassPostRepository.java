@@ -16,5 +16,5 @@ import java.util.UUID;
 @Repository
 public interface ClassPostRepository extends CassandraRepository<ClassPost, UUID> {
     @Query("SELECT * FROM class_post WHERE teacher_id = ?0")
-    List<ClassPost> findClassesByTeacherId(String teacherId);
+    List<ClassPost> findClassesByTeacherId(UUID teacherId);
 }

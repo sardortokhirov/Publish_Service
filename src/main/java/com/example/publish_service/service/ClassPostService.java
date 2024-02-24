@@ -16,8 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -46,7 +44,36 @@ public class ClassPostService {
         this.s3Buckets = s3Buckets;
     }
 
-    public void uploadNewClass(String username, ClassDto classDto, MultipartFile photoFile, MultipartFile videoFile) {
+    public void updatePost(UUID uuid, String username, ClassDto classDto, MultipartFile photoFile, MultipartFile videoFile) {
+        ClassPost classPost = classPostRepository.findById(uuid).orElseThrow();
+        classPost.setTitle(classDto.getTitle());
+        classPost.setDescription(classDto.getDescription());
+        classPost.setCourseTarget(classDto.getCourseTarget());
+        classPost.setRequirements(classDto.getRequirements());
+        classPost.setLanguage(languageRepository.existsByLanguage(classDto.getLanguage()) ? classDto.getLanguage() : "English");
+        classPost.setPrice(BigDecimal.valueOf(classDto.getPrice()));
+        classPost.setMaxStudents(classDto.getMaxStudents());
+        classPost.setDemoTime(classDto.getDemoTime());
+        classPost.setClassDays(classDto.getClassDays());
+        classPost.setClassTime(classDto.getClassTime());
+        classPost.setCategory(classDto.getCategory());
+        classPost.setTags(classDto.getTags());
+        if (photoFile != null) {
+            deleteFileData(username,classPost.getIntroVideoImgLink());
+            UUID videoImageId = UUID.randomUUID();
+            uploadClassPostData(username, photoFile, videoImageId.toString());
+            classPost.setIntroVideoImgLink(videoImageId.toString());
+        }
+        if (videoFile != null) {
+            deleteFileData(username,classPost.getIntroVideoLink());
+            UUID videoId = UUID.randomUUID();
+            uploadClassPostData(username, videoFile, videoId.toString());
+            classPost.setIntroVideoLink(videoId.toString());
+        }
+        classPostRepository.save(classPost);
+    }
+
+    public void uploadNewPost(String username, ClassDto classDto, MultipartFile photoFile, MultipartFile videoFile) {
         Teacher teacher = teacherRepository.findTeacherByUsername(username);
         if (teacher == null) {
             System.err.println("Teacher doesn't exist");
@@ -68,8 +95,8 @@ public class ClassPostService {
         classPost.setTags(classDto.getTags());
         UUID videoId = UUID.randomUUID();
         UUID videoImageId = UUID.randomUUID();
-        uploadClassPostData(username,videoFile , videoId.toString());
-        uploadClassPostData(username,photoFile , videoImageId.toString());
+        uploadClassPostData(username, videoFile, videoId.toString());
+        uploadClassPostData(username, photoFile, videoImageId.toString());
         classPost.setIntroVideoImgLink(videoImageId.toString());
         classPost.setIntroVideoLink(videoId.toString());
         classPostRepository.save(classPost);
@@ -87,7 +114,7 @@ public class ClassPostService {
         }
     }
 
-    public byte[] getUserProfileImage(String username, String uuid) {
+    public byte[] getUserFileData(String username, String uuid) {
         if (username == null || uuid == null) return null;
 
         return s3Service.getObject(
@@ -95,15 +122,21 @@ public class ClassPostService {
                 "profile-images/%s/%s".formatted(username, uuid)
         );
     }
+    public void deleteFileData(String username, String uuid) {
+        s3Service.deleteObject(
+                s3Buckets.getUser(),
+                "profile-images/%s/%s".formatted(username, uuid)
+        );
+    }
 
     public PageablePayload getPublishedClasses(String username, int number, int offset) {
         UUID teacherId = teacherRepository.findTeacherByUsername(username).getTeacherId();
-        List<ClassPost> classPostList = classPostRepository.findClassesByTeacherId(teacherId.toString());
-        List<PublishedClassPagePayload> classPagePayloads= classPostList.stream().skip(offset).limit(number).map(data -> {
+        List<ClassPost> classPostList = classPostRepository.findClassesByTeacherId(teacherId);
+        List<PublishedClassPagePayload> classPagePayloads = classPostList.stream().skip(offset).limit(number).map(data -> {
             PublishedClassPagePayload classPagePayload = new PublishedClassPagePayload();
             classPagePayload.setPostId(data.getPostId());
             classPagePayload.setTitle(data.getTitle());
-            classPagePayload.setPhotoFile(getUserProfileImage(username, data.getIntroVideoImgLink()));
+            classPagePayload.setPhotoFile(getUserFileData(username, data.getIntroVideoImgLink()));
             return classPagePayload;
         }).collect(Collectors.toList());
         return new PageablePayload(
@@ -112,7 +145,12 @@ public class ClassPostService {
         );
     }
 
-    public List<Language> getLanguages(){
+    public ClassPost getClassPost(UUID uuid) {
+        ClassPost classPost = classPostRepository.findById(uuid).orElseThrow();
+        return classPost;
+    }
+
+    public List<Language> getLanguages() {
         return languageRepository.findAll();
     }
 }

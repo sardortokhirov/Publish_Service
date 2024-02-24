@@ -1,5 +1,6 @@
 package com.example.publish_service.controller;
 
+import com.example.publish_service.model.cassandra.ClassPost;
 import com.example.publish_service.model.dto.ClassDto;
 import com.example.publish_service.model.entity.Language;
 import com.example.publish_service.model.payload.PageablePayload;
@@ -12,7 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Date-2/13/2024
@@ -28,8 +31,8 @@ public class PublishClassController {
 
     private final ClassPostService classPostService;
 
-    @PostMapping(value = "/{username}/create-edit")
-    public void uploadNewClass(
+    @PostMapping(value = "/{username}/create")
+    public boolean uploadNewPost(
                                @PathVariable String username,
                                @RequestParam("photoFile") MultipartFile photoFile,
                                @RequestParam("videoFile") MultipartFile videoFile,
@@ -38,9 +41,28 @@ public class PublishClassController {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             ClassDto classDto = objectMapper.readValue(classDtoJson, ClassDto.class);
-            classPostService.uploadNewClass(username, classDto, photoFile, videoFile);
+            classPostService.uploadNewPost(username, classDto, photoFile, videoFile);
+            return true;
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @PostMapping(value = "/{username}/edit/{uuid}")
+    public boolean updatePost(
+            @PathVariable String username,
+            @PathVariable UUID uuid,
+            @RequestParam(value = "photoFile",required = false) MultipartFile photoFile,
+            @RequestParam(value = "videoFile",required = false) MultipartFile videoFile,
+            @RequestParam(value = "classDto") String classDtoJson
+    ) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            ClassDto classDto = objectMapper.readValue(classDtoJson, ClassDto.class);
+            classPostService.updatePost(uuid,username, classDto, photoFile, videoFile);
+            return true;
+        } catch (JsonProcessingException e) {
+            return false;
         }
     }
 
@@ -54,5 +76,15 @@ public class PublishClassController {
     @GetMapping("/languages")
     public ResponseEntity<List<Language>> getLanguages() {
         return ResponseEntity.ok(classPostService.getLanguages());
+    }
+
+    @GetMapping("post/{id}")
+    public ResponseEntity<ClassPost> getClassPost(@PathVariable UUID id) {
+        return ResponseEntity.ok(classPostService.getClassPost(id));
+    }
+    @GetMapping(value = "/post/file/{username}/{uuid}")
+    public ResponseEntity<String> getFile(@PathVariable String username,@PathVariable String uuid) {
+        byte[] imageBytes = classPostService.getUserFileData(username,uuid);
+        return ResponseEntity.ok(Base64.getEncoder().encodeToString(imageBytes));
     }
 }
