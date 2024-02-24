@@ -51,15 +51,15 @@ public class User implements UserDetails {
     @Column(name = "is_enabled")
     private boolean isEnabled=false;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "country_id", referencedColumnName = "country_id")
     private Country country;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "country_code_id", referencedColumnName = "country_code_id")
     private CountryCode countryCode;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "gender_id", referencedColumnName = "gender_id")
     private Gender gender;
 
