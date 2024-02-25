@@ -36,44 +36,38 @@ public class ClassPostService {
     private final S3Service s3Service;
     private final S3Buckets s3Buckets;
 
-    public ClassPostService(ClassPostRepository classPostRepository, LanguageRepository languageRepository, TeacherRepository teacherRepository, S3Service s3Service, S3Buckets s3Buckets) {
+    private final ElasticsearchService elasticsearchService;
+
+    public ClassPostService(ClassPostRepository classPostRepository, LanguageRepository languageRepository, TeacherRepository teacherRepository, S3Service s3Service, S3Buckets s3Buckets, ElasticsearchService elasticsearchService) {
         this.classPostRepository = classPostRepository;
         this.languageRepository = languageRepository;
         this.teacherRepository = teacherRepository;
         this.s3Service = s3Service;
         this.s3Buckets = s3Buckets;
+        this.elasticsearchService = elasticsearchService;
     }
 
     public void updatePost(UUID uuid, String username, ClassDto classDto, MultipartFile photoFile, MultipartFile videoFile) {
         ClassPost classPost = classPostRepository.findById(uuid).orElseThrow();
-        classPost.setTitle(classDto.getTitle());
-        classPost.setDescription(classDto.getDescription());
-        classPost.setCourseTarget(classDto.getCourseTarget());
-        classPost.setRequirements(classDto.getRequirements());
-        classPost.setLanguage(languageRepository.existsByLanguage(classDto.getLanguage()) ? classDto.getLanguage() : "English");
-        classPost.setPrice(BigDecimal.valueOf(classDto.getPrice()));
-        classPost.setMaxStudents(classDto.getMaxStudents());
-        classPost.setDemoTime(classDto.getDemoTime());
-        classPost.setClassDays(classDto.getClassDays());
-        classPost.setClassTime(classDto.getClassTime());
-        classPost.setCategory(classDto.getCategory());
+        setClassPostData(classDto, classPost);
         classPost.setTags(classDto.getTags());
         if (photoFile != null) {
-            deleteFileData(username,classPost.getIntroVideoImgLink());
+            deleteFileData(username, classPost.getIntroVideoImgLink());
             UUID videoImageId = UUID.randomUUID();
             uploadClassPostData(username, photoFile, videoImageId.toString());
             classPost.setIntroVideoImgLink(videoImageId.toString());
         }
         if (videoFile != null) {
-            deleteFileData(username,classPost.getIntroVideoLink());
+            deleteFileData(username, classPost.getIntroVideoLink());
             UUID videoId = UUID.randomUUID();
             uploadClassPostData(username, videoFile, videoId.toString());
             classPost.setIntroVideoLink(videoId.toString());
         }
         classPostRepository.save(classPost);
+        elasticsearchService.updatePost(classPost.getPostId(), classDto,classPost.getIntroVideoImgLink());
     }
 
-    public void uploadNewPost(String username, ClassDto classDto, MultipartFile photoFile, MultipartFile videoFile) {
+    public void createPost(String username, ClassDto classDto, MultipartFile photoFile, MultipartFile videoFile) {
         Teacher teacher = teacherRepository.findTeacherByUsername(username);
         if (teacher == null) {
             System.err.println("Teacher doesn't exist");
@@ -81,6 +75,18 @@ public class ClassPostService {
         ClassPost classPost = new ClassPost();
         classPost.setPostId(UUID.randomUUID());
         classPost.setTeacherId(teacher.getTeacherId());
+        setClassPostData(classDto, classPost);
+        UUID videoId = UUID.randomUUID();
+        UUID videoImageId = UUID.randomUUID();
+        uploadClassPostData(username, videoFile, videoId.toString());
+        uploadClassPostData(username, photoFile, videoImageId.toString());
+        classPost.setIntroVideoImgLink(videoImageId.toString());
+        classPost.setIntroVideoLink(videoId.toString());
+        classPostRepository.save(classPost);
+        elasticsearchService.saveClassDto(classDto, classPost.getPostId(), String.valueOf(videoImageId));
+    }
+
+    private void setClassPostData(ClassDto classDto, ClassPost classPost) {
         classPost.setTitle(classDto.getTitle());
         classPost.setDescription(classDto.getDescription());
         classPost.setCourseTarget(classDto.getCourseTarget());
@@ -93,13 +99,6 @@ public class ClassPostService {
         classPost.setClassTime(classDto.getClassTime());
         classPost.setCategory(classDto.getCategory());
         classPost.setTags(classDto.getTags());
-        UUID videoId = UUID.randomUUID();
-        UUID videoImageId = UUID.randomUUID();
-        uploadClassPostData(username, videoFile, videoId.toString());
-        uploadClassPostData(username, photoFile, videoImageId.toString());
-        classPost.setIntroVideoImgLink(videoImageId.toString());
-        classPost.setIntroVideoLink(videoId.toString());
-        classPostRepository.save(classPost);
     }
 
     public void uploadClassPostData(String username, MultipartFile file, String randomId) {
@@ -122,6 +121,7 @@ public class ClassPostService {
                 "profile-images/%s/%s".formatted(username, uuid)
         );
     }
+
     public void deleteFileData(String username, String uuid) {
         s3Service.deleteObject(
                 s3Buckets.getUser(),

@@ -55,4 +55,7 @@ spring:
       replication-factor: 2
     local-datacenter: datacenter1
     schema-action: create_if_not_exists
-
+  elasticsearch:
+    rest:
+      cluster-nodes: localhost:9200
+      cluster-name: docker-cluster

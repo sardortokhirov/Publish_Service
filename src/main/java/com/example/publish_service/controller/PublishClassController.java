@@ -32,7 +32,7 @@ public class PublishClassController {
     private final ClassPostService classPostService;
 
     @PostMapping(value = "/{username}/create")
-    public boolean uploadNewPost(
+    public boolean createPost(
                                @PathVariable String username,
                                @RequestParam("photoFile") MultipartFile photoFile,
                                @RequestParam("videoFile") MultipartFile videoFile,
@@ -41,7 +41,7 @@ public class PublishClassController {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             ClassDto classDto = objectMapper.readValue(classDtoJson, ClassDto.class);
-            classPostService.uploadNewPost(username, classDto, photoFile, videoFile);
+            classPostService.createPost(username, classDto, photoFile, videoFile);
             return true;
         } catch (JsonProcessingException e) {
             return false;
