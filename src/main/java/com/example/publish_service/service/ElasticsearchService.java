@@ -34,8 +34,7 @@ public class ElasticsearchService {
     }
 
     public void updatePost(UUID postId, ClassDto classDto,String id) {
-        Post existingPost = postRepository.findById(String.valueOf(postId))
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+        Post existingPost = postRepository.findById(String.valueOf(postId)).orElse(new Post(postId.toString()));
         mapClassDtoToPost(classDto, existingPost,id);
         postRepository.save(existingPost);
     }

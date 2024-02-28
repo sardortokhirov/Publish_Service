@@ -12,6 +12,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Date-2/25/2024
@@ -59,4 +60,7 @@ public class Post {
     @Field(type = FieldType.Keyword)
     private List<String> tags;
 
+    public Post(String id) {
+        this.id = id;
+    }
 }
