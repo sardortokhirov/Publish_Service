@@ -12,6 +12,17 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "aws.s3.buckets")
 public class S3Buckets {
     private String user;
+    private String postVideos;
+
+    private String postImage;
+
+    public String getPostImage() {
+        return postImage;
+    }
+
+    public void setPostImage(String postImage) {
+        this.postImage = postImage;
+    }
 
     public String getUser() {
         return user;
@@ -19,5 +30,13 @@ public class S3Buckets {
 
     public void setUser(String user) {
         this.user = user;
+    }
+
+    public String getPostVideos() {
+        return postVideos;
+    }
+
+    public void setPostVideos(String postVideos) {
+        this.postVideos = postVideos;
     }
 }

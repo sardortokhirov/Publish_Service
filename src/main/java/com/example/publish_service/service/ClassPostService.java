@@ -47,20 +47,20 @@ public class ClassPostService {
         this.elasticsearchService = elasticsearchService;
     }
 
-    public void updatePost(UUID uuid, String username, ClassDto classDto, MultipartFile photoFile, MultipartFile videoFile) {
+    public void updatePost(UUID uuid,  ClassDto classDto, MultipartFile photoFile, MultipartFile videoFile) {
         ClassPost classPost = classPostRepository.findById(uuid).orElseThrow();
         setClassPostData(classDto, classPost);
         classPost.setTags(classDto.getTags());
         if (photoFile != null) {
-            deleteFileData(username, classPost.getIntroVideoImgLink());
+            deleteFileData(s3Buckets.getPostImage(), classPost.getIntroVideoImgLink());
             UUID videoImageId = UUID.randomUUID();
-            uploadClassPostData(username, photoFile, videoImageId.toString());
+            uploadPostImage( photoFile, videoImageId.toString());
             classPost.setIntroVideoImgLink(videoImageId.toString());
         }
         if (videoFile != null) {
-            deleteFileData(username, classPost.getIntroVideoLink());
+            deleteFileData(s3Buckets.getPostVideos(), classPost.getIntroVideoLink());
             UUID videoId = UUID.randomUUID();
-            uploadClassPostData(username, videoFile, videoId.toString());
+            uploadPostVideo( videoFile, videoId.toString());
             classPost.setIntroVideoLink(videoId.toString());
         }
         classPostRepository.save(classPost);
@@ -78,8 +78,8 @@ public class ClassPostService {
         setClassPostData(classDto, classPost);
         UUID videoId = UUID.randomUUID();
         UUID videoImageId = UUID.randomUUID();
-        uploadClassPostData(username, videoFile, videoId.toString());
-        uploadClassPostData(username, photoFile, videoImageId.toString());
+        uploadPostVideo( videoFile, videoId.toString());
+        uploadPostImage( photoFile, videoImageId.toString());
         classPost.setIntroVideoImgLink(videoImageId.toString());
         classPost.setIntroVideoLink(videoId.toString());
         classPostRepository.save(classPost);
@@ -101,11 +101,22 @@ public class ClassPostService {
         classPost.setTags(classDto.getTags());
     }
 
-    public void uploadClassPostData(String username, MultipartFile file, String randomId) {
+    public void uploadPostImage(MultipartFile file, String randomId) {
         try {
             s3Service.putObject(
-                    s3Buckets.getUser(),
-                    "profile-images/%s/%s".formatted(username, randomId),
+                    s3Buckets.getPostImage(),
+                    "%s".formatted( randomId),
+                    file.getBytes()
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void uploadPostVideo( MultipartFile file, String randomId) {
+        try {
+            s3Service.putObject(
+                    s3Buckets.getPostVideos(),
+                    "%s".formatted( randomId),
                     file.getBytes()
             );
         } catch (IOException e) {
@@ -113,19 +124,19 @@ public class ClassPostService {
         }
     }
 
-    public byte[] getUserFileData(String username, String uuid) {
-        if (username == null || uuid == null) return null;
+    public byte[] getPostImage(String uuid) {
+        if ( uuid == null) return null;
 
         return s3Service.getObject(
-                s3Buckets.getUser(),
-                "profile-images/%s/%s".formatted(username, uuid)
+                s3Buckets.getPostImage(),
+                "%s".formatted( uuid)
         );
     }
 
-    public void deleteFileData(String username, String uuid) {
+    public void deleteFileData(String bucketName, String uuid) {
         s3Service.deleteObject(
-                s3Buckets.getUser(),
-                "profile-images/%s/%s".formatted(username, uuid)
+                bucketName,
+                "%s".formatted(uuid)
         );
     }
 
@@ -136,7 +147,7 @@ public class ClassPostService {
             PublishedClassPagePayload classPagePayload = new PublishedClassPagePayload();
             classPagePayload.setPostId(data.getPostId());
             classPagePayload.setTitle(data.getTitle());
-            classPagePayload.setPhotoFile(getUserFileData(username, data.getIntroVideoImgLink()));
+            classPagePayload.setPhotoFile(getPostImage(data.getIntroVideoImgLink()));
             return classPagePayload;
         }).collect(Collectors.toList());
         return new PageablePayload(

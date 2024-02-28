@@ -23,8 +23,9 @@ aws:
   region: us-east-1
   s3:
     buckets:
-      user: fs-amigoscode-customer-client-2
-
+      user: loomo-user-data
+      postVideos: loomo-post-videos
+      postImage: loomo-post-image
 
 
 spring:

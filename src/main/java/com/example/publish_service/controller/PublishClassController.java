@@ -50,7 +50,6 @@ public class PublishClassController {
 
     @PostMapping(value = "/{username}/edit/{uuid}")
     public boolean updatePost(
-            @PathVariable String username,
             @PathVariable UUID uuid,
             @RequestParam(value = "photoFile",required = false) MultipartFile photoFile,
             @RequestParam(value = "videoFile",required = false) MultipartFile videoFile,
@@ -59,7 +58,7 @@ public class PublishClassController {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             ClassDto classDto = objectMapper.readValue(classDtoJson, ClassDto.class);
-            classPostService.updatePost(uuid,username, classDto, photoFile, videoFile);
+            classPostService.updatePost(uuid, classDto, photoFile, videoFile);
             return true;
         } catch (JsonProcessingException e) {
             return false;
@@ -82,9 +81,9 @@ public class PublishClassController {
     public ResponseEntity<ClassPost> getClassPost(@PathVariable UUID id) {
         return ResponseEntity.ok(classPostService.getClassPost(id));
     }
-    @GetMapping(value = "/post/file/{username}/{uuid}")
-    public ResponseEntity<String> getFile(@PathVariable String username,@PathVariable String uuid) {
-        byte[] imageBytes = classPostService.getUserFileData(username,uuid);
+    @GetMapping(value = "/post/image/{uuid}")
+    public ResponseEntity<String> getFile(@PathVariable String uuid) {
+        byte[] imageBytes = classPostService.getPostImage(uuid);
         return ResponseEntity.ok(Base64.getEncoder().encodeToString(imageBytes));
     }
 }
