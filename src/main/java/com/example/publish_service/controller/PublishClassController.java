@@ -48,7 +48,7 @@ public class PublishClassController {
         }
     }
 
-    @PostMapping(value = "/{username}/edit/{uuid}")
+    @PostMapping(value = "/edit/{uuid}")
     public boolean updatePost(
             @PathVariable UUID uuid,
             @RequestParam(value = "photoFile",required = false) MultipartFile photoFile,

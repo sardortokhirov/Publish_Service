@@ -28,8 +28,8 @@ public class ElasticsearchService {
 
     public void saveClassDto(ClassDto classDto, UUID uuid,String id) {
         Post post = new Post();
-        post.setId(String.valueOf(uuid));
         mapClassDtoToPost(classDto, post,id);
+        post.setId(String.valueOf(uuid));
         postRepository.save(post);
     }
 

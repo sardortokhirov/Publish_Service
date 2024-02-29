@@ -28,8 +28,7 @@ import java.util.UUID;
 @Table("class_post")
 public class ClassPost {
 
-    @PrimaryKey
-    @Column("post_id")
+    @PrimaryKey("post_id")
     private UUID postId;
 
     @Column("teacher_id")
