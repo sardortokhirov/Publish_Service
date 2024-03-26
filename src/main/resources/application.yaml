@@ -30,7 +30,7 @@ aws:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/loomo
+    url: jdbc:postgresql://postgres.loomo.com:5432/loomo
     username: postgres
     password: sardor
   jpa:
@@ -48,7 +48,7 @@ spring:
   codec:
     max-in-memory-size: 100MB
   cassandra:
-    contact-points: loomo-cassandra-container
+    contact-points: cassandra.loomo.com
     keyspace-name: loomo_keyspace
     port: 9042
     replication:
@@ -58,5 +58,5 @@ spring:
     schema-action: create_if_not_exists
   elasticsearch:
     rest:
-      cluster-nodes: localhost:9200
-      cluster-name: docker-cluster
+      cluster-nodes: elasticsearch.loomo.com:9200
+#      cluster-name: docker-cluster
