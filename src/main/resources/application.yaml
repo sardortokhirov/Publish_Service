@@ -53,7 +53,7 @@ spring:
     port: 9042
     replication:
       class: SimpleStrategy
-      replication-factor: 2
+      replication-factor: 1
     local-datacenter: datacenter1
     schema-action: create_if_not_exists
   elasticsearch:
