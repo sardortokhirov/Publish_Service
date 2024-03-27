@@ -59,4 +59,4 @@ spring:
   elasticsearch:
     rest:
       cluster-nodes: elasticsearch.loomo.com:9200
-#      cluster-name: docker-cluster
+      cluster-name: docker-cluster
