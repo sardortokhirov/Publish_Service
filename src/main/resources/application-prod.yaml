@@ -60,5 +60,3 @@ spring:
     rest:
       cluster-nodes: elasticsearch.loomo.com:9200
       cluster-name: docker-cluster
-      username: elastic
-      password: sardor
