@@ -20,7 +20,7 @@ server:
 
 
 aws:
-  region: us-east-1
+  region: eu-north-1
   s3:
     buckets:
       user: loomo-user-data
