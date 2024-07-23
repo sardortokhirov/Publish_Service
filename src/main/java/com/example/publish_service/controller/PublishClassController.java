@@ -7,8 +7,6 @@ import com.example.publish_service.model.payload.PageablePayload;
 import com.example.publish_service.service.ClassPostService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,10 +24,13 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/publish-class")
 @CrossOrigin(origins = "*")
-@RequiredArgsConstructor
 public class PublishClassController {
 
     private final ClassPostService classPostService;
+
+    public PublishClassController(ClassPostService classPostService) {
+        this.classPostService = classPostService;
+    }
 
     @PostMapping(value = "/{username}/create")
     public boolean createPost(

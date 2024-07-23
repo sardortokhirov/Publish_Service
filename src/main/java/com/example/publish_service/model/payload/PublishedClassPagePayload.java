@@ -20,5 +20,5 @@ import java.util.UUID;
 public class PublishedClassPagePayload {
     private UUID postId;
     private String title;
-    private byte[] photoFile;
+    private String imageId;
 }

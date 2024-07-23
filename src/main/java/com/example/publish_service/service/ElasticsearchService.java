@@ -18,7 +18,6 @@ import java.util.UUID;
  */
 @Service
 public class ElasticsearchService {
-
     private final PostRepository postRepository;
 
     @Autowired

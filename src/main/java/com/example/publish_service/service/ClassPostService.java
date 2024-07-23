@@ -11,6 +11,7 @@ import com.example.publish_service.repository.TeacherRepository;
 import com.example.publish_service.repository.cassandra.ClassPostRepository;
 import com.example.publish_service.s3.S3Buckets;
 import com.example.publish_service.s3.S3Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +39,7 @@ public class ClassPostService {
 
     private final ElasticsearchService elasticsearchService;
 
+    @Autowired
     public ClassPostService(ClassPostRepository classPostRepository, LanguageRepository languageRepository, TeacherRepository teacherRepository, S3Service s3Service, S3Buckets s3Buckets, ElasticsearchService elasticsearchService) {
         this.classPostRepository = classPostRepository;
         this.languageRepository = languageRepository;
@@ -147,7 +149,8 @@ public class ClassPostService {
             PublishedClassPagePayload classPagePayload = new PublishedClassPagePayload();
             classPagePayload.setPostId(data.getPostId());
             classPagePayload.setTitle(data.getTitle());
-            classPagePayload.setPhotoFile(getPostImage(data.getIntroVideoImgLink()));
+//            classPagePayload.setPhotoFile(getPostImage(data.getIntroVideoImgLink()));
+            classPagePayload.setImageId(data.getIntroVideoImgLink());
             return classPagePayload;
         }).collect(Collectors.toList());
         return new PageablePayload(
