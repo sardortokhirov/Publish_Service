@@ -23,9 +23,9 @@ aws:
   region: eu-north-1
   s3:
     buckets:
-      user: loomo-user-data
-      postVideos: loomo-post-videos
-      postImage: loomo-post-image
+      user: user-data-loomo
+      postVideos: post-videos-loomo
+      postImage: post-images-loomo
 
 
 spring:
