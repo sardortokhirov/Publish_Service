@@ -69,4 +69,12 @@ public class ClassPost {
     private String category;
 
     private List<String> tags;
+
+    private boolean isPrivate;
+
+    @Column("is_roadmap_present")
+    private List<String> roadmap;
+
+    private boolean isRoadmapPresent;
+
 }

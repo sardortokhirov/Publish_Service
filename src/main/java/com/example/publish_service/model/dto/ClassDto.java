@@ -34,4 +34,9 @@ public class ClassDto {
     private Date classTime;
     private String category;
     private List<String> tags;
+    private List<String> roadmap;
+
+    private boolean isPrivate;
+
+    private boolean isRoadmapPresent;
 }

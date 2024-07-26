@@ -49,43 +49,45 @@ public class ClassPostService {
         this.elasticsearchService = elasticsearchService;
     }
 
-    public void updatePost(UUID uuid,  ClassDto classDto, MultipartFile photoFile, MultipartFile videoFile) {
+    public void updatePost(UUID uuid, ClassDto classDto, MultipartFile photoFile, MultipartFile videoFile) {
         ClassPost classPost = classPostRepository.findById(uuid).orElseThrow();
         setClassPostData(classDto, classPost);
-        classPost.setTags(classDto.getTags());
         if (photoFile != null) {
             deleteFileData(s3Buckets.getPostImage(), classPost.getIntroVideoImgLink());
             UUID videoImageId = UUID.randomUUID();
-            uploadPostImage( photoFile, videoImageId.toString());
+            uploadPostImage(photoFile, videoImageId.toString());
             classPost.setIntroVideoImgLink(videoImageId.toString());
         }
         if (videoFile != null) {
             deleteFileData(s3Buckets.getPostVideos(), classPost.getIntroVideoLink());
             UUID videoId = UUID.randomUUID();
-            uploadPostVideo( videoFile, videoId.toString());
+            uploadPostVideo(videoFile, videoId.toString());
             classPost.setIntroVideoLink(videoId.toString());
         }
         classPostRepository.save(classPost);
-        elasticsearchService.updatePost(classPost.getPostId(), classDto,classPost.getIntroVideoImgLink());
+        if (classDto.isPrivate()) {
+            //delete logic
+//            elasticsearchService.updatePost(classPost.getPostId(), classDto,classPost.getIntroVideoImgLink());
+        } else {
+            elasticsearchService.updatePost(classPost.getPostId(), classDto, classPost.getIntroVideoImgLink());
+        }
     }
 
     public void createPost(String username, ClassDto classDto, MultipartFile photoFile, MultipartFile videoFile) {
-        Teacher teacher = teacherRepository.findTeacherByUsername(username);
-        if (teacher == null) {
-            System.err.println("Teacher doesn't exist");
-        }
+        Teacher teacher = teacherRepository.findTeacherByUsername(username).orElseThrow();
         ClassPost classPost = new ClassPost();
         classPost.setPostId(UUID.randomUUID());
         classPost.setTeacherId(teacher.getTeacherId());
         setClassPostData(classDto, classPost);
         UUID videoId = UUID.randomUUID();
         UUID videoImageId = UUID.randomUUID();
-        uploadPostVideo( videoFile, videoId.toString());
-        uploadPostImage( photoFile, videoImageId.toString());
+        uploadPostVideo(videoFile, videoId.toString());
+        uploadPostImage(photoFile, videoImageId.toString());
         classPost.setIntroVideoImgLink(videoImageId.toString());
         classPost.setIntroVideoLink(videoId.toString());
         classPostRepository.save(classPost);
-        elasticsearchService.saveClassDto(classDto, classPost.getPostId(), String.valueOf(videoImageId));
+        if (!classDto.isPrivate())
+            elasticsearchService.saveClassDto(classDto, classPost.getPostId(), String.valueOf(videoImageId));
     }
 
     private void setClassPostData(ClassDto classDto, ClassPost classPost) {
@@ -101,24 +103,28 @@ public class ClassPostService {
         classPost.setClassTime(classDto.getClassTime());
         classPost.setCategory(classDto.getCategory());
         classPost.setTags(classDto.getTags());
+        classPost.setRoadmap(classDto.getRoadmap());
+        classPost.setPrivate(classDto.isPrivate());
+        classPost.setRoadmapPresent(classDto.isRoadmapPresent());
     }
 
     public void uploadPostImage(MultipartFile file, String randomId) {
         try {
             s3Service.putObject(
                     s3Buckets.getPostImage(),
-                    "%s".formatted( randomId),
+                    "%s".formatted(randomId),
                     file.getBytes()
             );
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-    public void uploadPostVideo( MultipartFile file, String randomId) {
+
+    public void uploadPostVideo(MultipartFile file, String randomId) {
         try {
             s3Service.putObject(
                     s3Buckets.getPostVideos(),
-                    "%s".formatted( randomId),
+                    "%s".formatted(randomId),
                     file.getBytes()
             );
         } catch (IOException e) {
@@ -127,11 +133,11 @@ public class ClassPostService {
     }
 
     public byte[] getPostImage(String uuid) {
-        if ( uuid == null) return null;
+        if (uuid == null) return null;
 
         return s3Service.getObject(
                 s3Buckets.getPostImage(),
-                "%s".formatted( uuid)
+                "%s".formatted(uuid)
         );
     }
 
@@ -143,7 +149,7 @@ public class ClassPostService {
     }
 
     public PageablePayload getPublishedClasses(String username, int number, int offset) {
-        UUID teacherId = teacherRepository.findTeacherByUsername(username).getTeacherId();
+        UUID teacherId = teacherRepository.findTeacherByUsername(username).orElseThrow().getTeacherId();
         List<ClassPost> classPostList = classPostRepository.findClassesByTeacherId(teacherId);
         List<PublishedClassPagePayload> classPagePayloads = classPostList.stream().skip(offset).limit(number).map(data -> {
             PublishedClassPagePayload classPagePayload = new PublishedClassPagePayload();

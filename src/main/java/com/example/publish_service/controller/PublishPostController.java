@@ -24,11 +24,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/publish-class")
 @CrossOrigin(origins = "*")
-public class PublishClassController {
+public class PublishPostController {
 
     private final ClassPostService classPostService;
 
-    public PublishClassController(ClassPostService classPostService) {
+    public PublishPostController(ClassPostService classPostService) {
         this.classPostService = classPostService;
     }
 
