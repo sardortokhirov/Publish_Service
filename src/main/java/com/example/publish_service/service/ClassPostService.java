@@ -65,7 +65,7 @@ public class ClassPostService {
             classPost.setIntroVideoLink(videoId.toString());
         }
         classPostRepository.save(classPost);
-        if (classDto.isPrivate()) {
+        if (classDto.getIsPrivate()) {
             //delete logic
 //            elasticsearchService.updatePost(classPost.getPostId(), classDto,classPost.getIntroVideoImgLink());
         } else {
@@ -86,7 +86,7 @@ public class ClassPostService {
         classPost.setIntroVideoImgLink(videoImageId.toString());
         classPost.setIntroVideoLink(videoId.toString());
         classPostRepository.save(classPost);
-        if (!classDto.isPrivate())
+        if (!classDto.getIsPrivate())
             elasticsearchService.saveClassDto(classDto, classPost.getPostId(), String.valueOf(videoImageId));
     }
 
@@ -101,11 +101,13 @@ public class ClassPostService {
         classPost.setDemoTime(classDto.getDemoTime());
         classPost.setClassDays(classDto.getClassDays());
         classPost.setClassTime(classDto.getClassTime());
-        classPost.setCategory(classDto.getCategory());
         classPost.setTags(classDto.getTags());
         classPost.setRoadmap(classDto.getRoadmap());
-        classPost.setPrivate(classDto.isPrivate());
-        classPost.setRoadmapPresent(classDto.isRoadmapPresent());
+        classPost.setPrivate(classDto.getIsPrivate());
+        classPost.setRoadmapPresent(classDto.getIsRoadmapPresent());
+        classPost.setClassEndDate(classDto.getClassEndDate());
+        classPost.setClassStartDate(classDto.getClassStartDate());
+        classPost.setDuration(classDto.getDuration());
     }
 
     public void uploadPostImage(MultipartFile file, String randomId) {
@@ -148,7 +150,7 @@ public class ClassPostService {
         );
     }
 
-    public PageablePayload getPublishedClasses(String username, int number, int offset) {
+    public PageablePayload getPosts(String username, int number, int offset) {
         UUID teacherId = teacherRepository.findTeacherByUsername(username).orElseThrow().getTeacherId();
         List<ClassPost> classPostList = classPostRepository.findClassesByTeacherId(teacherId);
         List<PublishedClassPagePayload> classPagePayloads = classPostList.stream().skip(offset).limit(number).map(data -> {

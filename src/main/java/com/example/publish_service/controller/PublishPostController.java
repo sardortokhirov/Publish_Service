@@ -70,7 +70,7 @@ public class PublishPostController {
     public ResponseEntity<PageablePayload> getPublishedClasses(@PathVariable String username,
                                                                @RequestParam(required = false, name = "number", defaultValue = "8") int number,
                                                                @RequestParam(required = false, name = "offset", defaultValue = "0") int offset) {
-        return ResponseEntity.ok(classPostService.getPublishedClasses(username, number, offset));
+        return ResponseEntity.ok(classPostService.getPosts(username, number, offset));
     }
 
     @GetMapping("/languages")

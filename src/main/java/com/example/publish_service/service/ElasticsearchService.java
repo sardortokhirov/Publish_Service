@@ -47,7 +47,6 @@ public class ElasticsearchService {
         post.setImageId(id);
         post.setClassDays(classDto.getClassDays());
         post.setClassTime(classDto.getClassTime());
-        post.setCategory(classDto.getCategory());
         post.setTags(classDto.getTags());
     }
 }

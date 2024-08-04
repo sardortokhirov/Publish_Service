@@ -51,11 +51,19 @@ public class ClassPost {
     @Column("max_students")
     private Integer maxStudents;
 
+    private Integer duration;
+
     @Column("demo_time")
     private Date demoTime;
 
     @Column("class_days")
     private List<String> classDays;
+
+    @Column("class_start_date")
+    private Date classStartDate;
+
+    @Column("class_end_date")
+    private Date classEndDate;
 
     @Column("class_time")
     private Date classTime;
@@ -66,15 +74,15 @@ public class ClassPost {
     @Column("intro_video_img_link")
     private String introVideoImgLink;
 
-    private String category;
 
     private List<String> tags;
 
+    @Column("is_private")
     private boolean isPrivate;
 
-    @Column("is_roadmap_present")
     private List<String> roadmap;
 
+    @Column("is_roadmap_present")
     private boolean isRoadmapPresent;
 
 }

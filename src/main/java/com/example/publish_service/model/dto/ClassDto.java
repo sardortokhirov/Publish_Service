@@ -4,11 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Date-2/13/2024
@@ -26,17 +24,25 @@ public class ClassDto {
     private String description;
     private List<String> courseTarget;
     private List<String> requirements;
+
     private String language;
     private Double price;
+
     private Integer maxStudents;
+
     private Date demoTime;
+
     private List<String> classDays;
+
+    private Date classStartDate;
+    private Date classEndDate;
     private Date classTime;
-    private String category;
+    private int duration;
+
     private List<String> tags;
     private List<String> roadmap;
 
-    private boolean isPrivate;
+    private Boolean isPrivate;
 
-    private boolean isRoadmapPresent;
+    private Boolean isRoadmapPresent;
 }
