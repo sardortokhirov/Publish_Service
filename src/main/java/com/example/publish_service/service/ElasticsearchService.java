@@ -49,4 +49,8 @@ public class ElasticsearchService {
         post.setClassTime(classDto.getClassTime());
         post.setTags(classDto.getTags());
     }
+
+    public void deletePost(UUID postId){
+        postRepository.deleteById(String.valueOf(postId));
+    }
 }

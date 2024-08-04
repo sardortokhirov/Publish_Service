@@ -34,10 +34,10 @@ public class PublishPostController {
 
     @PostMapping(value = "/{username}/create")
     public boolean createPost(
-                               @PathVariable String username,
-                               @RequestParam("photoFile") MultipartFile photoFile,
-                               @RequestParam("videoFile") MultipartFile videoFile,
-                               @RequestParam("classDto") String classDtoJson
+            @PathVariable String username,
+            @RequestParam("photoFile") MultipartFile photoFile,
+            @RequestParam("videoFile") MultipartFile videoFile,
+            @RequestParam("classDto") String classDtoJson
     ) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -52,8 +52,8 @@ public class PublishPostController {
     @PostMapping(value = "/edit/{uuid}")
     public boolean updatePost(
             @PathVariable UUID uuid,
-            @RequestParam(value = "photoFile",required = false) MultipartFile photoFile,
-            @RequestParam(value = "videoFile",required = false) MultipartFile videoFile,
+            @RequestParam(value = "photoFile", required = false) MultipartFile photoFile,
+            @RequestParam(value = "videoFile", required = false) MultipartFile videoFile,
             @RequestParam(value = "classDto") String classDtoJson
     ) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -82,9 +82,17 @@ public class PublishPostController {
     public ResponseEntity<ClassPost> getClassPost(@PathVariable UUID id) {
         return ResponseEntity.ok(classPostService.getClassPost(id));
     }
+
     @GetMapping(value = "/post/image/{uuid}")
     public ResponseEntity<String> getFile(@PathVariable String uuid) {
         byte[] imageBytes = classPostService.getPostImage(uuid);
         return ResponseEntity.ok(Base64.getEncoder().encodeToString(imageBytes));
     }
+
+    @DeleteMapping(value = "/delete/{uuid}")
+    public boolean deletePost(@PathVariable UUID uuid) {
+        classPostService.deletePost(uuid);
+        return true;
+    }
+
 }

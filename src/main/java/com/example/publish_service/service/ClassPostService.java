@@ -175,4 +175,9 @@ public class ClassPostService {
     public List<Language> getLanguages() {
         return languageRepository.findAll();
     }
+
+    public void deletePost(UUID uuid) {
+        classPostRepository.deleteById(uuid);
+        elasticsearchService.deletePost(uuid);
+    }
 }
