@@ -51,6 +51,7 @@ public class ClassPostService {
 
     public void updatePost(UUID uuid, ClassDto classDto, MultipartFile photoFile, MultipartFile videoFile) {
         ClassPost classPost = classPostRepository.findById(uuid).orElseThrow();
+        boolean isPrivate= classPost.isPrivate();
         setClassPostData(classDto, classPost);
         if (photoFile != null) {
             deleteFileData(s3Buckets.getPostImage(), classPost.getIntroVideoImgLink());
@@ -66,8 +67,9 @@ public class ClassPostService {
         }
         classPostRepository.save(classPost);
         if (classDto.getIsPrivate()) {
-            //delete logic
-//            elasticsearchService.updatePost(classPost.getPostId(), classDto,classPost.getIntroVideoImgLink());
+            if (isPrivate){
+                elasticsearchService.deletePost(classPost.getPostId());
+            }
         } else {
             elasticsearchService.updatePost(classPost.getPostId(), classDto, classPost.getIntroVideoImgLink());
         }
@@ -157,7 +159,6 @@ public class ClassPostService {
             PublishedClassPagePayload classPagePayload = new PublishedClassPagePayload();
             classPagePayload.setPostId(data.getPostId());
             classPagePayload.setTitle(data.getTitle());
-//            classPagePayload.setPhotoFile(getPostImage(data.getIntroVideoImgLink()));
             classPagePayload.setImageId(data.getIntroVideoImgLink());
             return classPagePayload;
         }).collect(Collectors.toList());
@@ -177,6 +178,9 @@ public class ClassPostService {
     }
 
     public void deletePost(UUID uuid) {
+        ClassPost classPost = classPostRepository.findById(uuid).orElseThrow();
+        deleteFileData(s3Buckets.getPostVideos(), classPost.getIntroVideoLink());
+        deleteFileData(s3Buckets.getPostImage(), classPost.getIntroVideoImgLink());
         classPostRepository.deleteById(uuid);
         elasticsearchService.deletePost(uuid);
     }
