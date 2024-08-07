@@ -12,7 +12,6 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Date-2/25/2024
@@ -34,9 +33,6 @@ public class Post {
     private String title;
 
     @Field(type = FieldType.Keyword)
-    private List<String> courseTarget;
-
-    @Field(type = FieldType.Keyword)
     private String language;
 
     @Field(type = FieldType.Double)
@@ -45,14 +41,20 @@ public class Post {
     @Field(type = FieldType.Integer)
     private Integer maxStudents;
 
+    @Field(type = FieldType.Integer)
+    private Integer duration;
+
     @Field(type = FieldType.Keyword)
     private List<String> classDays;
 
     @Field(type = FieldType.Date)
     private Date classTime;
 
-    @Field(type = FieldType.Keyword)
-    private String category;
+    @Field(type = FieldType.Date)
+    private Date classStartDate;
+
+    @Field(type = FieldType.Date)
+    private Date demoTime;
 
     @Field(type = FieldType.Keyword)
     private String imageId;

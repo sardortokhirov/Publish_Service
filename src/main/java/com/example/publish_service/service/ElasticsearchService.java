@@ -40,7 +40,6 @@ public class ElasticsearchService {
 
     private void mapClassDtoToPost(ClassDto classDto, Post post, String id) {
         post.setTitle(classDto.getTitle());
-        post.setCourseTarget(classDto.getCourseTarget());
         post.setLanguage(classDto.getLanguage());
         post.setPrice(classDto.getPrice());
         post.setMaxStudents(classDto.getMaxStudents());
@@ -48,6 +47,10 @@ public class ElasticsearchService {
         post.setClassDays(classDto.getClassDays());
         post.setClassTime(classDto.getClassTime());
         post.setTags(classDto.getTags());
+        post.setClassDays(classDto.getClassDays());
+        post.setClassStartDate(classDto.getClassStartDate());
+        post.setDemoTime(classDto.getDemoTime());
+        post.setDuration(classDto.getDuration());
     }
 
     public void deletePost(UUID postId){
