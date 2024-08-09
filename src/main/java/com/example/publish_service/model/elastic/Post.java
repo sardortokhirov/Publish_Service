@@ -32,6 +32,9 @@ public class Post {
     @Field(type = FieldType.Text)
     private String title;
 
+    @Field(type = FieldType.Text)
+    private String description;
+
     @Field(type = FieldType.Keyword)
     private String language;
 
