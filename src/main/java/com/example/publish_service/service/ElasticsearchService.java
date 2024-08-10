@@ -52,6 +52,7 @@ public class ElasticsearchService {
         post.setDemoTime(classDto.getDemoTime());
         post.setDuration(classDto.getDuration());
         post.setDescription(classDto.getDescription());
+        post.setClassEndDate(classDto.getClassEndDate());
     }
 
     public void deletePost(UUID postId){

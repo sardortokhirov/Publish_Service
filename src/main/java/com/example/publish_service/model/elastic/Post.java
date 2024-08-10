@@ -57,6 +57,9 @@ public class Post {
     private Date classStartDate;
 
     @Field(type = FieldType.Date)
+    private Date classEndDate;
+
+    @Field(type = FieldType.Date)
     private Date demoTime;
 
     @Field(type = FieldType.Keyword)
