@@ -23,9 +23,9 @@ aws:
   region: eu-north-1
   s3:
     buckets:
-      user: user-data-loomo
-      postVideos: post-videos-loomo
-      postImage: post-images-loomo
+      user: loomo-data
+      postVideos: loomo-video
+      postImage: loomo-image
 
 
 spring:
@@ -61,4 +61,4 @@ spring:
 #      cluster-nodes: docker.loomo.online:9200
       cluster-nodes: localhost:9200
       cluster-name: docker-cluster
-#    uris: http://docker.loomo.online:9200
+#    uris: http://16.170.15.46:9200
